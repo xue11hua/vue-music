@@ -10,6 +10,8 @@ const url={
     music:localurl+'music/url',//获取音乐
     lyric:localurl+'lyric',//歌词
     artists:localurl+'top/artists',//歌手
+    toplist:localurl+'top/list',//热歌榜
+    toplistsong:localurl+'artists',//歌手歌单
 }
 
 export default url

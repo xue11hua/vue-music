@@ -9,7 +9,7 @@
            <li v-for="group in singers" class="list-group" :key="group.id" ref="listGroup">
                 <h2 class="list-group-title">{{ group.title }}</h2>
                 <ul>
-                <li v-for="item in group.items" class="list-group-item" :key="item.id">
+                <li v-for="item in group.items" class="list-group-item" :key="item.id" @click='tolist(item.id)'>
                     <img v-lazy="item.avatar" class="avatar">
                     <span class="name">{{ item.name }}</span>
                 </li>
@@ -57,6 +57,10 @@ export default {
         // this.items = res.data.banners;
       }
       console.log(res);
+    },
+     tolist:function(index){
+      console.log('111');
+      this.$router.push({path: '/gedan',query:{index:index}});
     },
     onShortcutStart(e) {
       // 获取到绑定的 index

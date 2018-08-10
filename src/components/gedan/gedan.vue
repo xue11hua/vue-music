@@ -1,6 +1,6 @@
 <template>
-    
-    <div class="gedan">
+    <div>
+          <div class="gedan" v-if='listcon.coverImgUrl'>
         <div class="header_gedan" ref="header">
             <div @click='goback'>
                 <i class="iconfont">&#xe62f;</i>
@@ -35,6 +35,44 @@
 </div>
          </div>
     </div>
+
+      <div class="gedan" v-if='listcon.picUrl'>
+        <div class="header_gedan" ref="header">
+            <div @click='goback'>
+                <i class="iconfont">&#xe62f;</i>
+                <span ref='headertext'>歌单</span>    
+            </div>
+        </div>
+         <div class="wrapper" ref="wrapper">
+<div class="content">
+        <div class="gedan_con">
+            <div class="gedan_div">
+                <img width="100%" :src="listcon.picUrl" alt="">
+                <div class="flier"></div>
+            <div class="gedan_text">{{listcon.name}}<br /><span><i class="iconfont">&#xe7c4;</i>{{listcon.musicSize}}</span></div>
+            </div>
+            
+        </div>
+        <div class="song_list">
+            <div class="song_title">
+                <i class="iconfont">&#xe600;</i>
+                <span>播放全部</span>
+            </div>
+            <div class="song_con">
+                <div class="song_con_div" v-for='(item,index) in listsong' :key='index' @click='player(index,item.name,item.id,item.al.picUrl)'>
+                    <div class="title">{{index+1}}</div>
+                    <div class="song_title_ge">
+                        <p>{{item.name}}</p>
+                        <p ><span v-for='(iteim,indexa) in item.ar' :key='indexa'>{{iteim.name}}</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+         </div>
+    </div>
+
+    </div>
 </template>
 <script>
 import http from "@/utils/http";
@@ -58,7 +96,7 @@ export default {
     },
     methods:{
         goback(){
-            this.$router.push({path:'/'})
+            this.$router.go(-1)
         },
        ...mapActions({
   
@@ -78,10 +116,56 @@ export default {
       if (res.data.code == 200) {
         this.listsong=res.data.playlist.tracks;
         this.listcon=res.data.playlist;
+        this.$nextTick(() => {
+              this.scroll = new BScroll(this.$refs.wrapper,this.options);
+              this.scroll.on('scroll', (pos) => {
+                  if(pos.y<-200){
+                      this.$refs.header.style.background ='rgba(0, 0, 0, 0.5)';
+                      this.$refs.headertext.innerHTML=this.listcon.name
+                  }else{
+                       this.$refs.header.style.background ='rgba(0, 0, 0, 0)';
+                       this.$refs.headertext.innerHTML='歌单';
+                  }
+                
+               
+               
+              }) 
+      })
+      }else{
+          this.fetchgeshou(this.gedanid)
       }
      
       
     },
+    
+    fetchgeshou: async function(index) {
+      let params = {
+          id:index
+      };
+      const res = await http.get(api.toplistsong, params);
+      if (res.data.code == 200) {
+        this.listsong=res.data.hotSongs;
+        this.listcon=res.data.artist;
+        this.$nextTick(() => {
+              this.scroll = new BScroll(this.$refs.wrapper,this.options);
+              this.scroll.on('scroll', (pos) => {
+                  if(pos.y<-200){
+                      this.$refs.header.style.background ='rgba(0, 0, 0, 0.5)';
+                      this.$refs.headertext.innerHTML=this.listcon.name
+                  }else{
+                       this.$refs.header.style.background ='rgba(0, 0, 0, 0)';
+                       this.$refs.headertext.innerHTML='歌单';
+                  }
+                
+               
+               
+              }) 
+      })
+      }
+     
+      
+    },
+
       fetchgq: async function(index) {
       let params = {
           id:index
@@ -141,21 +225,7 @@ export default {
       
       this.fetchData(this.$route.query.index);
       this.gedanid=this.$route.query.index;
-       this.$nextTick(() => {
-              this.scroll = new BScroll(this.$refs.wrapper,this.options);
-              this.scroll.on('scroll', (pos) => {
-                  if(pos.y<-200){
-                      this.$refs.header.style.background ='rgba(0, 0, 0, 0.5)';
-                      this.$refs.headertext.innerHTML=this.listcon.name
-                  }else{
-                       this.$refs.header.style.background ='rgba(0, 0, 0, 0)';
-                       this.$refs.headertext.innerHTML='歌单';
-                  }
-                
-               
-               
-              }) 
-      })
+       
   }
 
 }
